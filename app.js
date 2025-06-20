@@ -68,7 +68,6 @@ class App{
 	}
 	
     setEnvironment(){
-   setEnvironment(){
     this.scene.background = new THREE.Color(0x87CEEB); // sky blue
 }
 }
