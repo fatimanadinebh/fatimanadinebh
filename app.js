@@ -100,7 +100,7 @@ class App{
 				function (gltf2) {
 					const godzilla = gltf2.scene;
 					godzilla.name = "Godzilla";
-					godzilla.position.set(0, 0, 4); // 4 meters in front of player
+					godzilla.position.set(0, 0, 0);
 					self.scene.add(godzilla);
 				},
 				undefined,
