@@ -95,7 +95,7 @@ class App{
 			// ✅ Load Godzilla model right after adding college
 			const godzillaLoader = new GLTFLoader().setPath(self.assetsPath); // No DRACOLoader here!
 godzillaLoader.load(
-    'godzilla_low_poly.glb',
+    'godzilla.glb',
     function (gltf2) {
         const godzilla = gltf2.scene;
         godzilla.name = "Godzilla";
