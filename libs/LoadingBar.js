@@ -30,6 +30,8 @@ class LoadingBar {
 		this.barBg.style.height = '10px';
 		this.barBg.style.background = '#ddd';
 		this.barBg.style.borderRadius = '5px';
+		this.barBg.style.position = 'relative';
+		this.barBg.style.overflow = 'hidden';
 
 		// Green progress bar
 		this.bar = document.createElement('div');
@@ -38,6 +40,9 @@ class LoadingBar {
 		this.bar.style.background = '#00cc66'; // green color
 		this.bar.style.borderRadius = '5px';
 		this.bar.style.transition = 'width 0.3s ease';
+		this.bar.style.position = 'absolute';
+		this.bar.style.left = '0';
+		this.bar.style.top = '0'; 
 
 		this.barBg.appendChild(this.bar);
 		this.dom.appendChild(this.text);
