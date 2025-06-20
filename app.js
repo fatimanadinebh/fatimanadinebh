@@ -65,6 +65,7 @@ class App{
                 self.boardShown = '';
                 self.boardData = obj;
             });
+		
 	}
 	
     setEnvironment(){
