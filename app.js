@@ -27,9 +27,10 @@ class App{
         this.camera.add( this.dummyCam );
         
 		this.scene = new THREE.Scene();
+		this.scene.background = new THREE.Color(0x87CEEB); // Sky blue
         this.scene.add( this.dolly );
         
-		const ambient = new THREE.HemisphereLight(0xFFFFFF, 0xAAAAAA, 4.2); // increased from 0.8 to 1.2
+		const ambient = new THREE.HemisphereLight(0xFFFFFF, 0xAAAAAA, 4.2); // increased from 0.8 to 4.2
 		this.scene.add(ambient);
 
 		this.renderer = new THREE.WebGLRenderer({ antialias: true });
