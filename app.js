@@ -93,17 +93,12 @@ class App{
 			self.scene.add(college);
 
 			// ✅ Load Godzilla model right after adding college
-			const godzillaLoader = new GLTFLoader().setPath(self.assetsPath);
-const godzillaDraco = new DRACOLoader();
-godzillaDraco.setDecoderPath('./libs/three/js/draco/');
-godzillaLoader.setDRACOLoader(godzillaDraco);
-
-godzillaLoader.load(
+			loader.load(
     'godzilla.glb',
     function (gltf2) {
         const godzilla = gltf2.scene;
         godzilla.name = "Godzilla";
-        godzilla.position.set(0, 0, 0); // You can adjust this
+        godzilla.position.set(0, 0, 0);
         self.scene.add(godzilla);
         console.log("✅ Godzilla loaded", godzilla);
     },
