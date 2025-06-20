@@ -28,6 +28,18 @@ class App{
         
 		this.scene = new THREE.Scene();
         this.scene.add( this.dolly );
+		this.listener = new THREE.AudioListener(); // Create audio listener
+this.camera.add(this.listener); // Attach to camera so it moves with user
+
+this.sound = new THREE.Audio(this.listener); // Create global (non-3D) sound
+
+const audioLoader = new THREE.AudioLoader(); // Use THREE's audio loader
+audioLoader.load('./assets/bg-music.mp3', (buffer) => {
+    this.sound.setBuffer(buffer);      // Set the audio data
+    this.sound.setLoop(true);          // Loop the music forever
+    this.sound.setVolume(0.5);         // Set volume (0.0 = silent, 1.0 = loud)
+    this.sound.play();                 // Play the music!
+});
         
 		const ambient = new THREE.HemisphereLight(0xFFFFFF, 0xAAAAAA, 4.2); // increased from 0.8 to 4.2
 		this.scene.add(ambient);
