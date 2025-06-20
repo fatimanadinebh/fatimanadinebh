@@ -93,13 +93,17 @@ class App{
 			self.scene.add(college);
 
 			// ✅ Load Godzilla model right after adding college
-			const godzillaLoader = new GLTFLoader();
+			const godzillaLoader = new GLTFLoader().setPath(self.assetsPath);
+const godzillaDraco = new DRACOLoader();
+godzillaDraco.setDecoderPath('./libs/three/js/draco/');
+godzillaLoader.setDRACOLoader(godzillaDraco);
+
 godzillaLoader.load(
-    './assets/godzilla.glb', // or 'godzilla_low_poly.glb'
+    'godzilla.glb',
     function (gltf2) {
         const godzilla = gltf2.scene;
         godzilla.name = "Godzilla";
-        godzilla.position.set(0, 0, 0);
+        godzilla.position.set(0, 0, 0); // You can adjust this
         self.scene.add(godzilla);
         console.log("✅ Godzilla loaded", godzilla);
     },
@@ -108,6 +112,7 @@ godzillaLoader.load(
         console.error('❌ Error loading Godzilla model:', error);
     }
 );
+
 			college.traverse(function (child) {
 				if (child.isMesh){
 					if (child.name.indexOf("PROXY") !== -1){
