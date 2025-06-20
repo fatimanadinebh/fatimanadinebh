@@ -94,20 +94,30 @@ class App{
 
 			// ✅ Load Godzilla model right after adding college
 			const godzillaLoader = new GLTFLoader().setPath(self.assetsPath);
-			godzillaLoader.setDRACOLoader(dracoLoader);
-			godzillaLoader.load(
-				'godzilla_low_poly.glb',
-				function (gltf2) {
-					const godzilla = gltf2.scene;
-					godzilla.name = "Godzilla";
-					godzilla.position.set(0, 0, 0);
-					self.scene.add(godzilla);
-				},
-				undefined,
-				function (error) {
-					console.error('Error loading Godzilla model:', error);
-				}
-			);
+godzillaLoader.setDRACOLoader(dracoLoader);
+godzillaLoader.load(
+    'godzilla_low_poly.glb',
+    function (gltf2) {
+        const godzilla = gltf2.scene;
+        godzilla.name = "Godzilla";
+
+        godzilla.position.set(0, 0, -4); // 4m in front of player
+        godzilla.scale.set(2, 2, 2);     // scale it up
+        self.dolly.add(godzilla);        // attach to player start
+
+        godzilla.traverse((node) => {
+            if (node.isMesh) {
+                node.material.side = THREE.DoubleSide;
+                node.castShadow = true;
+                node.receiveShadow = true;
+            }
+        });
+    },
+    undefined,
+    function (error) {
+        console.error('Error loading Godzilla model:', error);
+    }
+);
 
 			college.traverse(function (child) {
 				if (child.isMesh){
