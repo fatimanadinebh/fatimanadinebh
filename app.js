@@ -79,69 +79,73 @@ class App{
     }
     
 	loadCollege(){
-		
-		const loader = new GLTFLoader( ).setPath(this.assetsPath);
-        const dracoLoader = new DRACOLoader();
-        dracoLoader.setDecoderPath( './libs/three/js/draco/' );
-        loader.setDRACOLoader( dracoLoader );
-        
-        const self = this;
-		
-		// Load a glTF resource
-		loader.load(
-			// resource URL
-			'college.glb',
-			// called when the resource is loaded
-			function ( gltf ) {
+	const loader = new GLTFLoader().setPath(this.assetsPath);
+	const dracoLoader = new DRACOLoader();
+	dracoLoader.setDecoderPath('./libs/three/js/draco/');
+	loader.setDRACOLoader(dracoLoader);
 
-                const college = gltf.scene.children[0];
-				self.scene.add( college );
-				
-				college.traverse(function (child) {
-    				if (child.isMesh){
-						if (child.name.indexOf("PROXY")!=-1){
-							child.material.visible = false;
-							self.proxy = child;
-						}else if (child.material.name.indexOf('Glass')!=-1){
-                            child.material.opacity = 0.1;
-                            child.material.transparent = true;
-                        }else if (child.material.name.indexOf("SkyBox") !== -1){
-    child.material.dispose(); // Remove the old material
+	const self = this;
 
-    child.material = new THREE.MeshBasicMaterial({
-        color: 0x87CEEB, // Solid sky blue
-        side: THREE.BackSide // Ensure it renders on the inside of the cube
-    });
-}
+	loader.load(
+		'college.glb',
+		function (gltf) {
+			const college = gltf.scene.children[0];
+			self.scene.add(college);
+
+			// ✅ Load Godzilla model right after adding college
+			const godzillaLoader = new GLTFLoader().setPath(self.assetsPath);
+			godzillaLoader.setDRACOLoader(dracoLoader);
+			godzillaLoader.load(
+				'godzilla_low_poly.glb',
+				function (gltf2) {
+					const godzilla = gltf2.scene;
+					godzilla.name = "Godzilla";
+					godzilla.position.set(0, 0, 4); // 4 meters in front of player
+					self.scene.add(godzilla);
+				},
+				undefined,
+				function (error) {
+					console.error('Error loading Godzilla model:', error);
+				}
+			);
+
+			college.traverse(function (child) {
+				if (child.isMesh){
+					if (child.name.indexOf("PROXY") !== -1){
+						child.material.visible = false;
+						self.proxy = child;
+					}else if (child.material.name.indexOf('Glass') !== -1){
+						child.material.opacity = 0.1;
+						child.material.transparent = true;
+					}else if (child.material.name.indexOf("SkyBox") !== -1){
+						child.material.dispose();
+						child.material = new THREE.MeshBasicMaterial({
+							color: 0x87CEEB,
+							side: THREE.BackSide
+						});
 					}
-				});
-                       
-                const door1 = college.getObjectByName("LobbyShop_Door__1_");
-                const door2 = college.getObjectByName("LobbyShop_Door__2_");
-                const pos = door1.position.clone().sub(door2.position).multiplyScalar(0.5).add(door2.position);
-                const obj = new THREE.Object3D();
-                obj.name = "LobbyShop";
-                obj.position.copy(pos);
-                college.add( obj );
-                
-                self.loadingBar.visible = false;
-			
-                self.setupXR();
-			},
-			// called while loading is progressing
-			function ( xhr ) {
+				}
+			});
 
-				self.loadingBar.progress = (xhr.loaded / xhr.total);
-				
-			},
-			// called when loading has errors
-			function ( error ) {
+			const door1 = college.getObjectByName("LobbyShop_Door__1_");
+			const door2 = college.getObjectByName("LobbyShop_Door__2_");
+			const pos = door1.position.clone().sub(door2.position).multiplyScalar(0.5).add(door2.position);
+			const obj = new THREE.Object3D();
+			obj.name = "LobbyShop";
+			obj.position.copy(pos);
+			college.add(obj);
 
-				console.log( 'An error happened' );
-
-			}
-		);
-	}
+			self.loadingBar.visible = false;
+			self.setupXR();
+		},
+		function (xhr) {
+			self.loadingBar.progress = (xhr.loaded / xhr.total);
+		},
+		function (error) {
+			console.log('An error happened');
+		}
+	);
+}
     
     setupXR(){
         this.renderer.xr.enabled = true;
