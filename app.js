@@ -70,7 +70,6 @@ class App{
     setEnvironment(){
     this.scene.background = new THREE.Color(0x87CEEB); // sky blue
 }
-}
     
     resize(){
         this.camera.aspect = window.innerWidth / window.innerHeight;
