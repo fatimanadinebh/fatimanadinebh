@@ -119,12 +119,14 @@ class App{
 						}else if (child.material.name.indexOf('Glass')!=-1){
                             child.material.opacity = 0.1;
                             child.material.transparent = true;
-                        }else if (child.material.name.indexOf("SkyBox")!=-1){
-                            const mat1 = child.material;
-                            const mat2 = new THREE.MeshBasicMaterial({map: mat1.map});
-                            child.material = mat2;
-                            mat1.dispose();
-                        }
+                        }else if (child.material.name.indexOf("SkyBox") !== -1){
+    child.material.dispose(); // Remove the old material
+
+    child.material = new THREE.MeshBasicMaterial({
+        color: 0x87CEEB, // Solid sky blue
+        side: THREE.BackSide // Ensure it renders on the inside of the cube
+    });
+}
 					}
 				});
                        
