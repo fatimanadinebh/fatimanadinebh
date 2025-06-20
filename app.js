@@ -54,6 +54,7 @@ class App{
 		this.loadingBar = new LoadingBar();
 		
 		this.loadCollege();
+		this.loadModel('godzilla_low_poly.glb', { x: 3, y: 0, z: -5 }); // change position as needed
         
         this.immersive = false;
         
@@ -92,7 +93,22 @@ class App{
     }
     
 	loadCollege(){
-        
+        loadModel(name, position = {x: 0, y: 0, z: 0}) {
+    const loader = new GLTFLoader().setPath(this.assetsPath);
+    const dracoLoader = new DRACOLoader();
+    dracoLoader.setDecoderPath('./libs/three/js/draco/');
+    loader.setDRACOLoader(dracoLoader);
+
+    const self = this;
+
+    loader.load(name, function (gltf) {
+        const model = gltf.scene;
+        model.position.set(position.x, position.y, position.z);
+        self.scene.add(model);
+    }, undefined, function (error) {
+        console.error(`Failed to load model: ${name}`, error);
+    });
+}
 		const loader = new GLTFLoader( ).setPath(this.assetsPath);
         const dracoLoader = new DRACOLoader();
         dracoLoader.setDecoderPath( './libs/three/js/draco/' );
