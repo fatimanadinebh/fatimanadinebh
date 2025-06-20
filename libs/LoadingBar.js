@@ -1,52 +1,56 @@
-class LoadingBar{
-	constructor(options){
-		this.domElement = document.createElement("div");
-		this.domElement.style.position = 'fixed';
-		this.domElement.style.top = '0';
-		this.domElement.style.left = '0';
-		this.domElement.style.width = '100%';
-		this.domElement.style.height = '100%';
-		this.domElement.style.background = '#000';
-		this.domElement.style.opacity = '0.7';
-		this.domElement.style.display = 'flex';
-		this.domElement.style.alignItems = 'center';
-		this.domElement.style.justifyContent = 'center';
-		this.domElement.style.zIndex = '1111';
-		const barBase = document.createElement("div");
-		barBase.style.background = '#aaa';
-		barBase.style.width = '50%';
-		barBase.style.minWidth = '250px';
-		barBase.style.borderRadius = '10px';
-		barBase.style.height = '15px';
-		this.domElement.appendChild(barBase);
-		const bar = document.createElement("div");
-		bar.style.background = '#22a';
-		bar.style.width = '50%';
-		bar.style.borderRadius = '10px';
-		bar.style.height = '100%';
-		bar.style.width = '0';
-		barBase.appendChild(bar);
-		this.progressBar = bar;
-		
-		document.body.appendChild(this.domElement);
-		
-		function onprogress(delta){
-			const progress = delta*100;
-			loader.progressBar.style.width = `${progress}%`;
-		}
+class LoadingBar {
+	constructor() {
+		this.dom = document.createElement('div');
+		this.dom.style.position = 'absolute';
+		this.dom.style.top = '50%';
+		this.dom.style.left = '50%';
+		this.dom.style.transform = 'translate(-50%, -50%)';
+		this.dom.style.width = '300px';
+		this.dom.style.height = '80px';
+		this.dom.style.background = '#ffe6f0'; // light pink background
+		this.dom.style.borderRadius = '12px';
+		this.dom.style.display = 'flex';
+		this.dom.style.flexDirection = 'column';
+		this.dom.style.alignItems = 'center';
+		this.dom.style.justifyContent = 'center';
+		this.dom.style.boxShadow = '0 0 20px rgba(0,0,0,0.2)';
+		this.dom.style.zIndex = '1000';
+
+		// Add loading text
+		this.text = document.createElement('div');
+		this.text.innerText = 'Loading...';
+		this.text.style.marginBottom = '8px';
+		this.text.style.fontFamily = 'Arial, sans-serif';
+		this.text.style.fontSize = '16px';
+		this.text.style.color = '#333';
+
+		// Bar background
+		this.barBg = document.createElement('div');
+		this.barBg.style.width = '90%';
+		this.barBg.style.height = '10px';
+		this.barBg.style.background = '#ddd';
+		this.barBg.style.borderRadius = '5px';
+
+		// Green progress bar
+		this.bar = document.createElement('div');
+		this.bar.style.height = '100%';
+		this.bar.style.width = '0%';
+		this.bar.style.background = '#00cc66'; // green color
+		this.bar.style.borderRadius = '5px';
+		this.bar.style.transition = 'width 0.3s ease';
+
+		this.barBg.appendChild(this.bar);
+		this.dom.appendChild(this.text);
+		this.dom.appendChild(this.barBg);
+		document.body.appendChild(this.dom);
 	}
-	
-	set progress(delta){
-		const percent = delta*100;
-		this.progressBar.style.width = `${percent}%`;
+
+	set progress(value) {
+		this.bar.style.width = `${100 * value}%`;
 	}
-	
-	set visible(value){
-		if (value){
-			this.domElement.style.display = 'flex';
-		}else{
-			this.domElement.style.display = 'none';
-		}
+
+	set visible(value) {
+		this.dom.style.display = value ? 'flex' : 'none';
 	}
 }
 
