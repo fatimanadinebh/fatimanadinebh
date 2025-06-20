@@ -99,7 +99,7 @@ class App{
         const godzilla = gltf2.scene;
         godzilla.name = "Godzilla";
         godzilla.position.set(2, 0, 9);
-	godzilla.scale.set(5, 5, 5);
+	godzilla.scale.set(3, 3, 3);
         self.scene.add(godzilla);
         console.log("✅ Godzilla loaded", godzilla);
     },
