@@ -93,9 +93,9 @@ class App{
 			self.scene.add(college);
 
 			// ✅ Load Godzilla model right after adding college
-			const godzillaLoader = new GLTFLoader().setPath(self.assetsPath); // No DRACOLoader here!
+			const godzillaLoader = new GLTFLoader();
 godzillaLoader.load(
-    'godzilla.glb',
+    './assets/godzilla.glb', // or 'godzilla_low_poly.glb'
     function (gltf2) {
         const godzilla = gltf2.scene;
         godzilla.name = "Godzilla";
@@ -105,7 +105,7 @@ godzillaLoader.load(
     },
     undefined,
     function (error) {
-        console.error('Error loading Godzilla model:', error);
+        console.error('❌ Error loading Godzilla model:', error);
     }
 );
 			college.traverse(function (child) {
