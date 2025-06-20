@@ -78,8 +78,8 @@ class App{
         const envMap = pmremGenerator.fromEquirectangular( texture ).texture;
         pmremGenerator.dispose();
 
-        self.scene.environment = envMap; // keeps lighting reflections
-        // DO NOT set scene.background to envMap — this allows your solid color to remain
+        self.scene.background = envMap; // use HDR texture as background
+self.scene.environment = envMap; // keep for reflections
     }, undefined, (err)=>{
         console.error( 'An error occurred setting the environment');
     });
