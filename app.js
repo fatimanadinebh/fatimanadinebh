@@ -77,9 +77,9 @@ class App{
     loader.load( './assets/hdr/venice_sunset_1k.hdr', ( texture ) => {
         const envMap = pmremGenerator.fromEquirectangular( texture ).texture;
         pmremGenerator.dispose();
-
-        self.scene.background = envMap; // use HDR texture as background
+	    
 self.scene.environment = envMap; // keep for reflections
+	    
     }, undefined, (err)=>{
         console.error( 'An error occurred setting the environment');
     });
