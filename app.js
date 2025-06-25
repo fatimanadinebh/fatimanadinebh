@@ -139,21 +139,36 @@ class App{
 				);
 
 				college.traverse(function (child) {
-					if (child.isMesh){
-						if (child.name.indexOf("PROXY") !== -1){
-							child.material.visible = false;
-							self.proxy = child;
-						}else if (child.material.name.indexOf('Glass') !== -1){
-							child.material.opacity = 0.1;
-							child.material.transparent = true;
-						}else if (child.material.name.indexOf("SkyBox") !== -1){
-							child.material.dispose();
-							child.material = new THREE.MeshBasicMaterial({
-								color: 0x000000, // fallback black (will be hidden by HDR)
-								side: THREE.BackSide
-							});
-						}
-					}
+					if (child.isMesh) {
+    // 🔁 Replace texture on a specific mesh
+    if (child.name === "Billboard_01") { // <-- replace with actual mesh name
+        const textureLoader = new THREE.TextureLoader().setPath(self.assetsPath);
+        textureLoader.load('godzilla_1954.jpg', (texture) => {
+            texture.encoding = THREE.sRGBEncoding;
+            texture.flipY = false; // Required for glTF compatibility
+
+            child.material.map = texture;
+            child.material.needsUpdate = true;
+
+            console.log("✅ Replaced texture on Billboard_01 with godzilla_1954.jpg");
+        });
+    }
+
+    // Your existing material checks...
+    if (child.name.indexOf("PROXY") !== -1){
+        child.material.visible = false;
+        self.proxy = child;
+    } else if (child.material.name.indexOf('Glass') !== -1){
+        child.material.opacity = 0.1;
+        child.material.transparent = true;
+    } else if (child.material.name.indexOf("SkyBox") !== -1){
+        child.material.dispose();
+        child.material = new THREE.MeshBasicMaterial({
+            color: 0x87CEEB,
+            side: THREE.BackSide
+        });
+    }
+}
 				});
 
 				const door1 = college.getObjectByName("LobbyShop_Door__1_");
