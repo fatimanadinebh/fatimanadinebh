@@ -140,30 +140,40 @@ class App{
 
 				college.traverse(function (child) {
     if (child.isMesh) {
-        // Hide proxy mesh
-        if (child.name.indexOf("PROXY") !== -1) {
-            child.material.visible = false;
+        const mat = child.material;
+
+        // Hide proxy
+        if (child.name.includes("PROXY")) {
+            mat.visible = false;
             self.proxy = child;
         }
-        // Make glass semi-transparent but still write to depth buffer
-        else if (child.material.name.indexOf('Glass') !== -1) {
-            child.material.opacity = 0.6;
-            child.material.transparent = true;
-            child.material.depthWrite = true;
+        // Glass material: transparent but depth-aware
+        else if (mat.name.includes("Glass")) {
+            mat.opacity = 0.5;                  // or 0.6 depending on clarity you want
+            mat.transparent = true;
+            mat.depthWrite = true;
+            mat.depthTest = true;
+            mat.side = THREE.DoubleSide;        // in case glass is single-sided
         }
-        // Replace skybox material
-        else if (child.material.name.indexOf("SkyBox") !== -1) {
+        // Skybox inside the model: replace with black
+        else if (mat.name.includes("SkyBox")) {
             child.material.dispose();
             child.material = new THREE.MeshBasicMaterial({
-                color: 0x000000, // fallback black (will be hidden by HDR)
+                color: 0x000000,
                 side: THREE.BackSide
             });
         }
-        // All other materials: ensure opaque and depth-safe
+        // All other materials: force opaque rendering
         else {
-            child.material.transparent = false;
-            child.material.depthWrite = true;
+            mat.transparent = false;
+            mat.opacity = 1.0;
+            mat.depthWrite = true;
+            mat.depthTest = true;
+            mat.side = THREE.FrontSide;
         }
+
+        // Optional: fix Z-fighting by adjusting renderOrder
+        child.renderOrder = 1;
     }
 });
 
