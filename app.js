@@ -47,7 +47,7 @@ document.body.addEventListener('click', () => {
     }
 }, { once: true });
         
-		const ambient = new THREE.HemisphereLight(0xFFFFFF, 0xAAAAAA, 2.2); // increased from 0.8 to 4.2
+		const ambient = new THREE.HemisphereLight(0xFFFFFF, 0xAAAAAA, 1.2); // increased from 0.8 to 4.2
 		this.scene.add(ambient);
 
 		this.renderer = new THREE.WebGLRenderer({ antialias: true });
