@@ -141,8 +141,16 @@ class App{
 				const textureLoader = new THREE.TextureLoader().setPath(self.assetsPath);
 
 college.traverse((child) => {
-    if (child.isMesh) {
-        console.log("🧩 Found mesh:", child.name, child);
+    if (child.isMesh && child.name === "BC_Sign_1") {
+        console.log("🎯 Applying Godzilla texture to:", child.name);
+
+        textureLoader.load('godzilla_1954.jpg', (texture) => {
+            child.material = new THREE.MeshBasicMaterial({
+                map: texture,
+                toneMapped: false // prevents black render under HDR skybox
+            });
+            child.material.needsUpdate = true;
+        });
     }
 });
 				
