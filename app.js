@@ -140,40 +140,37 @@ class App{
 
 				college.traverse(function (child) {
     if (child.isMesh) {
-        const mat = child.material;
+        let mat = child.material;
 
-        // Hide proxy
+        // Clone material if it's shared
+        if (Array.isArray(mat)) {
+            mat = mat.map(m => m.clone());
+        } else {
+            mat = mat.clone();
+        }
+        child.material = mat;
+
+        // Force all materials to behave as solid
         if (child.name.includes("PROXY")) {
             mat.visible = false;
             self.proxy = child;
-        }
-        // Glass material: transparent but depth-aware
-        else if (mat.name.includes("Glass")) {
-            mat.opacity = 0.5;                  // or 0.6 depending on clarity you want
-            mat.transparent = true;
+        } else {
+            mat.transparent = false;
+            mat.opacity = 1.0;
             mat.depthWrite = true;
             mat.depthTest = true;
-            mat.side = THREE.DoubleSide;        // in case glass is single-sided
+            mat.side = THREE.DoubleSide; // ✅ force render from both sides
+            child.renderOrder = 1;
         }
-        // Skybox inside the model: replace with black
-        else if (mat.name.includes("SkyBox")) {
-            child.material.dispose();
+
+        // Special handling for any skybox named mesh
+        if (mat.name.includes("SkyBox")) {
+            mat.dispose();
             child.material = new THREE.MeshBasicMaterial({
                 color: 0x000000,
                 side: THREE.BackSide
             });
         }
-        // All other materials: force opaque rendering
-        else {
-            mat.transparent = false;
-            mat.opacity = 1.0;
-            mat.depthWrite = true;
-            mat.depthTest = true;
-            mat.side = THREE.FrontSide;
-        }
-
-        // Optional: fix Z-fighting by adjusting renderOrder
-        child.renderOrder = 1;
     }
 });
 
