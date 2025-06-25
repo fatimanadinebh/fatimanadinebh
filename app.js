@@ -144,12 +144,10 @@ class App{
     const textureLoader = new THREE.TextureLoader().setPath(self.assetsPath);
     textureLoader.load('godzilla_1954.jpg', (texture) => {
         texture.encoding = THREE.sRGBEncoding;
-        texture.flipY = false; // Important for glTF
+        texture.flipY = false;
 
-        child.material.map = texture;
-        child.material.needsUpdate = true;
-
-        console.log(`✅ Replaced texture on ${child.name} with godzilla_1954.jpg`);
+        child.material = new THREE.MeshBasicMaterial({ map: texture });
+        console.log(`✅ FORCED material change on ${child.name}`);
     });
 }
 
