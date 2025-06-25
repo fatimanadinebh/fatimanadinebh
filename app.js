@@ -139,22 +139,33 @@ class App{
 				);
 
 				college.traverse(function (child) {
-					if (child.isMesh){
-						if (child.name.indexOf("PROXY") !== -1){
-							child.material.visible = false;
-							self.proxy = child;
-						}else if (child.material.name.indexOf('Glass') !== -1){
-							child.material.opacity = 0.1;
-							child.material.transparent = true;
-						}else if (child.material.name.indexOf("SkyBox") !== -1){
-							child.material.dispose();
-							child.material = new THREE.MeshBasicMaterial({
-								color: 0x000000, // fallback black (will be hidden by HDR)
-								side: THREE.BackSide
-							});
-						}
-					}
-				});
+    if (child.isMesh) {
+        // Hide proxy mesh
+        if (child.name.indexOf("PROXY") !== -1) {
+            child.material.visible = false;
+            self.proxy = child;
+        }
+        // Make glass semi-transparent but still write to depth buffer
+        else if (child.material.name.indexOf('Glass') !== -1) {
+            child.material.opacity = 0.6;
+            child.material.transparent = true;
+            child.material.depthWrite = true;
+        }
+        // Replace skybox material
+        else if (child.material.name.indexOf("SkyBox") !== -1) {
+            child.material.dispose();
+            child.material = new THREE.MeshBasicMaterial({
+                color: 0x000000, // fallback black (will be hidden by HDR)
+                side: THREE.BackSide
+            });
+        }
+        // All other materials: ensure opaque and depth-safe
+        else {
+            child.material.transparent = false;
+            child.material.depthWrite = true;
+        }
+    }
+});
 
 				const door1 = college.getObjectByName("LobbyShop_Door__1_");
 				const door2 = college.getObjectByName("LobbyShop_Door__2_");
