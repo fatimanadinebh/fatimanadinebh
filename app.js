@@ -140,19 +140,18 @@ class App{
 
 				college.traverse(function (child) {
 					if (child.isMesh) {
-    // 🔁 Replace texture on a specific mesh
-    if (child.name === "Billboard_01") { // <-- replace with actual mesh name
-        const textureLoader = new THREE.TextureLoader().setPath(self.assetsPath);
-        textureLoader.load('godzilla_1954.jpg', (texture) => {
-            texture.encoding = THREE.sRGBEncoding;
-            texture.flipY = false; // Required for glTF compatibility
+    if (child.name === "BC_Sign.002" || child.name === "BC_Sign_1") {
+            const textureLoader = new THREE.TextureLoader().setPath(self.assetsPath);
+            textureLoader.load('godzilla_1954.jpg', (texture) => {
+                texture.encoding = THREE.sRGBEncoding;
+                texture.flipY = false; // Needed for glTF
 
-            child.material.map = texture;
-            child.material.needsUpdate = true;
+                child.material.map = texture;
+                child.material.needsUpdate = true;
 
-            console.log("✅ Replaced texture on Billboard_01 with godzilla_1954.jpg");
-        });
-    }
+                console.log(`✅ Texture replaced on ${child.name}`);
+            });
+        }
 
     // Your existing material checks...
     if (child.name.indexOf("PROXY") !== -1){
