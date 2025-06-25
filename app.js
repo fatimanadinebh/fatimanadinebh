@@ -142,7 +142,7 @@ class App{
     if (child.isMesh) {
         let mat = child.material;
 
-        // Clone material if it's shared
+        // If material is an array (multi-material mesh)
         if (Array.isArray(mat)) {
             mat = mat.map(m => m.clone());
         } else {
@@ -150,26 +150,23 @@ class App{
         }
         child.material = mat;
 
-        // Force all materials to behave as solid
+        // Universal override: force solid appearance
+        mat.transparent = false;
+        mat.opacity = 1.0;
+        mat.alphaTest = 0.5; // discard fragments below alpha threshold
+        mat.depthWrite = true;
+        mat.depthTest = true;
+        mat.side = THREE.DoubleSide; // render both sides of faces
+        mat.colorWrite = true; // ensure color buffer is written
+
+        // Optional: disable environment reflections that can cause glow
+        mat.envMap = null;
+        mat.emissive = new THREE.Color(0x000000);
+        mat.emissiveIntensity = 0;
+
         if (child.name.includes("PROXY")) {
             mat.visible = false;
             self.proxy = child;
-        } else {
-            mat.transparent = false;
-            mat.opacity = 1.0;
-            mat.depthWrite = true;
-            mat.depthTest = true;
-            mat.side = THREE.DoubleSide; // ✅ force render from both sides
-            child.renderOrder = 1;
-        }
-
-        // Special handling for any skybox named mesh
-        if (mat.name.includes("SkyBox")) {
-            mat.dispose();
-            child.material = new THREE.MeshBasicMaterial({
-                color: 0x000000,
-                side: THREE.BackSide
-            });
         }
     }
 });
