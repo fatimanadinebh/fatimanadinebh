@@ -142,50 +142,50 @@ class App{
 
 college.traverse(function (child) {
 	if (child.isMesh) {
-		// 🎯 Replace texture on Sign_BC__1_
+		// Replace material on Sign_BC__1_
 		if (child.name === "Sign_BC__1_") {
 			textureLoader.load('godzilla_1954.jpg', (texture) => {
 				texture.encoding = THREE.sRGBEncoding;
 				texture.flipY = false;
 
-				child.material = child.material.clone(); // make material unique
-				child.material.map = texture;
+				child.material.dispose(); // remove old material
+				child.material = new THREE.MeshBasicMaterial({ map: texture });
 				child.material.needsUpdate = true;
 
-				console.log("✅ godzilla_1954.jpg applied to Sign_BC__1_");
+				console.log("✅ Sign_BC__1_ updated with godzilla_1954.jpg");
 			});
 		}
 
-		// 🎯 Replace texture on Sign_BC__2_
-		if (child.name === "Sign_BC__2_") {
+		// Replace material on Sign_BC__2_
+		else if (child.name === "Sign_BC__2_") {
 			textureLoader.load('godzilla_pic.jpg', (texture) => {
 				texture.encoding = THREE.sRGBEncoding;
 				texture.flipY = false;
 
-				child.material = child.material.clone(); // make material unique
-				child.material.map = texture;
+				child.material.dispose(); // remove old material
+				child.material = new THREE.MeshBasicMaterial({ map: texture });
 				child.material.needsUpdate = true;
 
-				console.log("✅ godzilla_pic.jpg applied to Sign_BC__2_");
+				console.log("✅ Sign_BC__2_ updated with godzilla_pic.jpg");
 			});
 		}
 
-    // Your existing material checks...
-    if (child.name.indexOf("PROXY") !== -1){
-        child.material.visible = false;
-        self.proxy = child;
-    } else if (child.material.name.indexOf('Glass') !== -1){
-        child.material.opacity = 0.1;
-        child.material.transparent = true;
-    } else if (child.material.name.indexOf("SkyBox") !== -1){
-        child.material.dispose();
-        child.material = new THREE.MeshBasicMaterial({
-            color: 0x87CEEB,
-            side: THREE.BackSide
-        });
-    }
-}
-				});
+		// Keep the rest of your logic
+		if (child.name.indexOf("PROXY") !== -1){
+			child.material.visible = false;
+			self.proxy = child;
+		} else if (child.material.name.indexOf('Glass') !== -1){
+			child.material.opacity = 0.1;
+			child.material.transparent = true;
+		} else if (child.material.name.indexOf("SkyBox") !== -1){
+			child.material.dispose();
+			child.material = new THREE.MeshBasicMaterial({
+				color: 0x87CEEB,
+				side: THREE.BackSide
+			});
+		}
+	}
+});
 
 				const door1 = college.getObjectByName("LobbyShop_Door__1_");
 				const door2 = college.getObjectByName("LobbyShop_Door__2_");
