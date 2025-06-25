@@ -138,18 +138,37 @@ class App{
 					}
 				);
 
-				college.traverse(function (child) {
-					if (child.isMesh) {
-    if (child.name === "Sign_BC__1_" || child.name === "Sign_BC__2_") {
-    const textureLoader = new THREE.TextureLoader().setPath(self.assetsPath);
-    textureLoader.load('godzilla_1954.jpg', (texture) => {
-        texture.encoding = THREE.sRGBEncoding;
-        texture.flipY = false;
+				const textureLoader = new THREE.TextureLoader().setPath(self.assetsPath);
 
-        child.material = new THREE.MeshBasicMaterial({ map: texture });
-        console.log(`✅ FORCED material change on ${child.name}`);
-    });
-}
+college.traverse(function (child) {
+	if (child.isMesh) {
+		// 🎯 Replace texture on Sign_BC__1_
+		if (child.name === "Sign_BC__1_") {
+			textureLoader.load('godzilla_1954.jpg', (texture) => {
+				texture.encoding = THREE.sRGBEncoding;
+				texture.flipY = false;
+
+				child.material = child.material.clone(); // make material unique
+				child.material.map = texture;
+				child.material.needsUpdate = true;
+
+				console.log("✅ godzilla_1954.jpg applied to Sign_BC__1_");
+			});
+		}
+
+		// 🎯 Replace texture on Sign_BC__2_
+		if (child.name === "Sign_BC__2_") {
+			textureLoader.load('godzilla_pic.jpg', (texture) => {
+				texture.encoding = THREE.sRGBEncoding;
+				texture.flipY = false;
+
+				child.material = child.material.clone(); // make material unique
+				child.material.map = texture;
+				child.material.needsUpdate = true;
+
+				console.log("✅ godzilla_pic.jpg applied to Sign_BC__2_");
+			});
+		}
 
     // Your existing material checks...
     if (child.name.indexOf("PROXY") !== -1){
