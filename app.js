@@ -142,20 +142,17 @@ class App{
 
 college.traverse(function (child) {
 	if (child.isMesh) {
-		const textureLoader = new THREE.TextureLoader().setPath(self.assetsPath);
-
 		if (child.name === "Sign_BC__1_") {
 			textureLoader.load('godzilla_1954.jpg', (texture) => {
 				texture.encoding = THREE.sRGBEncoding;
 				texture.flipY = false;
 
-				child.material.dispose(); // Remove any shared complex material
 				child.material = new THREE.MeshBasicMaterial({
 					map: texture,
-					side: THREE.FrontSide
+					side: THREE.DoubleSide // to make sure it's visible from both sides
 				});
-				child.material.needsUpdate = true;
 
+				child.material.needsUpdate = true;
 				console.log("✅ Applied godzilla_1954.jpg to Sign_BC__1_");
 			});
 		}
@@ -165,13 +162,12 @@ college.traverse(function (child) {
 				texture.encoding = THREE.sRGBEncoding;
 				texture.flipY = false;
 
-				child.material.dispose();
 				child.material = new THREE.MeshBasicMaterial({
 					map: texture,
-					side: THREE.FrontSide
+					side: THREE.DoubleSide
 				});
-				child.material.needsUpdate = true;
 
+				child.material.needsUpdate = true;
 				console.log("✅ Applied godzilla_pic.jpg to Sign_BC__2_");
 			});
 		}
