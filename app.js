@@ -13,6 +13,7 @@ class App{
 	constructor(){
 		const container = document.createElement( 'div' );
 		document.body.appendChild( container );
+		document.body.style.cursor = 'url("./assets/cursors/heart_cursor.png") 16 16, auto';
 
 		this.assetsPath = './assets/';
         
