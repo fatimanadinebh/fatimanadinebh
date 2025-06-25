@@ -86,14 +86,20 @@ class App{
 	}
 
 	// ✅ HDR sky environment (night sky)
-	setEnvironment(){
-		const loader = new RGBELoader().setPath(this.assetsPath);
-		loader.load('night_sky.hdr', (texture) => {
-			texture.mapping = THREE.EquirectangularReflectionMapping;
-			this.scene.background = texture;
-			this.scene.environment = texture;
-		});
-	}
+	setEnvironment() {
+    const loader = new RGBELoader().setPath(this.assetsPath);
+
+    loader.load('night_sky.hdr', (texture) => {
+        texture.mapping = THREE.EquirectangularReflectionMapping;
+
+        this.scene.background = texture;    // ✅ Realistic HDR skybox
+        this.scene.environment = texture;  // ✅ Affects reflective materials, lighting
+
+        console.log("✅ HDR skybox loaded successfully");
+    }, undefined, (err) => {
+        console.error("❌ Failed to load HDR environment:", err);
+    });
+}
     
 	resize(){
 		this.camera.aspect = window.innerWidth / window.innerHeight;
