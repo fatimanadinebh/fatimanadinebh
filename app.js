@@ -120,6 +120,7 @@ class App{
 			function (gltf) {
 				const college = gltf.scene.children[0];
 				self.scene.add(college);
+				self.proxy = college;
 
 				// ✅ Load Godzilla model
 				loader.load(
@@ -139,12 +140,6 @@ class App{
 				);
 
 				const textureLoader = new THREE.TextureLoader().setPath(self.assetsPath);
-
-college.traverse((child) => {
-    if (child.isMesh) {
-        console.log("🧩 Found mesh:", child.name, child);
-    }
-});
 				
 				const door1 = college.getObjectByName("LobbyShop_Door__1_");
 				const door2 = college.getObjectByName("LobbyShop_Door__2_");
