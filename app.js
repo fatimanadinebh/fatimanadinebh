@@ -1,8 +1,7 @@
-
 import * as THREE from './libs/three/three.module.js';
 import { GLTFLoader } from './libs/three/jsm/GLTFLoader.js';
 import { DRACOLoader } from './libs/three/jsm/DRACOLoader.js';
-import { RGBELoader } from './libs/three/jsm/RGBELoader.js';
+import { RGBELoader } from './libs/three/jsm/RGBELoader.js'; // keep this for HDR
 import { Stats } from './libs/stats.module.js';
 import { LoadingBar } from './libs/LoadingBar.js';
 import { VRButton } from './libs/VRButton.js';
@@ -20,44 +19,45 @@ class App{
 		this.camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 0.01, 500 );
 		this.camera.position.set( 0, 1.6, 0 );
         
-        this.dolly = new THREE.Object3D(  );
+        this.dolly = new THREE.Object3D();
         this.dolly.position.set(0, 0, 10);
-        this.dolly.add( this.camera );
+        this.dolly.add(this.camera);
         this.dummyCam = new THREE.Object3D();
-        this.camera.add( this.dummyCam );
+        this.camera.add(this.dummyCam);
         
 		this.scene = new THREE.Scene();
-        this.scene.add( this.dolly );
+        this.scene.add(this.dolly);
+
+		// ✅ Audio setup
 		this.listener = new THREE.AudioListener(); 
-this.camera.add(this.listener); 
+		this.camera.add(this.listener); 
+		this.sound = new THREE.Audio(this.listener); 
+		const audioLoader = new THREE.AudioLoader();
+		audioLoader.load('./assets/bg-music.mp3', (buffer) => {
+			this.sound.setBuffer(buffer);
+			this.sound.setLoop(true);
+			this.sound.setVolume(0.5);
+		});
+		document.body.addEventListener('click', () => {
+			if (this.sound && this.sound.buffer && !this.sound.isPlaying) {
+				this.sound.play();
+			}
+		}, { once: true });
 
-this.sound = new THREE.Audio(this.listener); 
-
-const audioLoader = new THREE.AudioLoader();
-audioLoader.load('./assets/bg-music.mp3', (buffer) => {
-    this.sound.setBuffer(buffer);
-    this.sound.setLoop(true);
-    this.sound.setVolume(0.5);
-});
-
-// ✅ Wait for the user to click before starting audio
-document.body.addEventListener('click', () => {
-    if (this.sound && this.sound.buffer && !this.sound.isPlaying) {
-        this.sound.play();
-    }
-}, { once: true });
-        
-		const ambient = new THREE.HemisphereLight(0xFFFFFF, 0xAAAAAA, 1.2); // increased from 0.8 to 4.2
+		// ✅ Light (adjusted)
+		const ambient = new THREE.HemisphereLight(0xFFFFFF, 0xAAAAAA, 1.2);
 		this.scene.add(ambient);
 
 		this.renderer = new THREE.WebGLRenderer({ antialias: true });
-		this.renderer.setPixelRatio( window.devicePixelRatio );
-		this.renderer.setSize( window.innerWidth, window.innerHeight );
+		this.renderer.setPixelRatio(window.devicePixelRatio);
+		this.renderer.setSize(window.innerWidth, window.innerHeight);
 		this.renderer.outputEncoding = THREE.sRGBEncoding;
-		container.appendChild( this.renderer.domElement );
-        this.setEnvironment();
-	
-        window.addEventListener( 'resize', this.resize.bind(this) );
+		container.appendChild(this.renderer.domElement);
+
+		// ✅ Realistic skybox environment
+		this.setEnvironment();
+
+		window.addEventListener('resize', this.resize.bind(this));
         
         this.clock = new THREE.Clock();
         this.up = new THREE.Vector3(0,1,0);
@@ -67,7 +67,7 @@ document.body.addEventListener('click', () => {
         this.raycaster = new THREE.Raycaster();
         
         this.stats = new Stats();
-		container.appendChild( this.stats.dom );
+		container.appendChild(this.stats.dom);
         
 		this.loadingBar = new LoadingBar();
 		
@@ -83,87 +83,92 @@ document.body.addEventListener('click', () => {
                 self.boardShown = '';
                 self.boardData = obj;
             });
-		
 	}
-	
-    setEnvironment(){
-    this.scene.background = new THREE.Color(0x87CEEB); // sky blue
-}
+
+	// ✅ HDR sky environment (night sky)
+	setEnvironment(){
+		const loader = new RGBELoader().setPath(this.assetsPath);
+		loader.load('night_sky.hdr', (texture) => {
+			texture.mapping = THREE.EquirectangularReflectionMapping;
+			this.scene.background = texture;
+			this.scene.environment = texture;
+		});
+	}
     
-    resize(){
-        this.camera.aspect = window.innerWidth / window.innerHeight;
-        this.camera.updateProjectionMatrix();
-        this.renderer.setSize( window.innerWidth, window.innerHeight );  
-    }
-    
+	resize(){
+		this.camera.aspect = window.innerWidth / window.innerHeight;
+		this.camera.updateProjectionMatrix();
+		this.renderer.setSize(window.innerWidth, window.innerHeight);  
+	}
+
 	loadCollege(){
-	const loader = new GLTFLoader().setPath(this.assetsPath);
-	const dracoLoader = new DRACOLoader();
-	dracoLoader.setDecoderPath('./libs/three/js/draco/');
-	loader.setDRACOLoader(dracoLoader);
+		const loader = new GLTFLoader().setPath(this.assetsPath);
+		const dracoLoader = new DRACOLoader();
+		dracoLoader.setDecoderPath('./libs/three/js/draco/');
+		loader.setDRACOLoader(dracoLoader);
 
-	const self = this;
+		const self = this;
 
-	loader.load(
-		'college.glb',
-		function (gltf) {
-			const college = gltf.scene.children[0];
-			self.scene.add(college);
+		loader.load(
+			'college.glb',
+			function (gltf) {
+				const college = gltf.scene.children[0];
+				self.scene.add(college);
 
-			// ✅ Load Godzilla model right after adding college
-			loader.load(
-    'godzilla.glb',
-    function (gltf2) {
-        const godzilla = gltf2.scene;
-        godzilla.name = "Godzilla";
-        godzilla.position.set(2, 0, 9);
-	godzilla.scale.set(3, 3, 3);
-        self.scene.add(godzilla);
-        console.log("✅ Godzilla loaded", godzilla);
-    },
-    undefined,
-    function (error) {
-        console.error('❌ Error loading Godzilla model:', error);
-    }
-);
-
-			college.traverse(function (child) {
-				if (child.isMesh){
-					if (child.name.indexOf("PROXY") !== -1){
-						child.material.visible = false;
-						self.proxy = child;
-					}else if (child.material.name.indexOf('Glass') !== -1){
-						child.material.opacity = 0.1;
-						child.material.transparent = true;
-					}else if (child.material.name.indexOf("SkyBox") !== -1){
-						child.material.dispose();
-						child.material = new THREE.MeshBasicMaterial({
-							color: 0x87CEEB,
-							side: THREE.BackSide
-						});
+				// ✅ Load Godzilla model
+				loader.load(
+					'godzilla.glb',
+					function (gltf2) {
+						const godzilla = gltf2.scene;
+						godzilla.name = "Godzilla";
+						godzilla.position.set(2, 0, 9);
+						godzilla.scale.set(3, 3, 3);
+						self.scene.add(godzilla);
+						console.log("✅ Godzilla loaded", godzilla);
+					},
+					undefined,
+					function (error) {
+						console.error('❌ Error loading Godzilla model:', error);
 					}
-				}
-			});
+				);
 
-			const door1 = college.getObjectByName("LobbyShop_Door__1_");
-			const door2 = college.getObjectByName("LobbyShop_Door__2_");
-			const pos = door1.position.clone().sub(door2.position).multiplyScalar(0.5).add(door2.position);
-			const obj = new THREE.Object3D();
-			obj.name = "LobbyShop";
-			obj.position.copy(pos);
-			college.add(obj);
+				college.traverse(function (child) {
+					if (child.isMesh){
+						if (child.name.indexOf("PROXY") !== -1){
+							child.material.visible = false;
+							self.proxy = child;
+						}else if (child.material.name.indexOf('Glass') !== -1){
+							child.material.opacity = 0.1;
+							child.material.transparent = true;
+						}else if (child.material.name.indexOf("SkyBox") !== -1){
+							child.material.dispose();
+							child.material = new THREE.MeshBasicMaterial({
+								color: 0x000000, // fallback black (will be hidden by HDR)
+								side: THREE.BackSide
+							});
+						}
+					}
+				});
 
-			self.loadingBar.visible = false;
-			self.setupXR();
-		},
-		function (xhr) {
-			self.loadingBar.progress = (xhr.loaded / xhr.total);
-		},
-		function (error) {
-			console.log('An error happened');
-		}
-	);
-}
+				const door1 = college.getObjectByName("LobbyShop_Door__1_");
+				const door2 = college.getObjectByName("LobbyShop_Door__2_");
+				const pos = door1.position.clone().sub(door2.position).multiplyScalar(0.5).add(door2.position);
+				const obj = new THREE.Object3D();
+				obj.name = "LobbyShop";
+				obj.position.copy(pos);
+				college.add(obj);
+
+				self.loadingBar.visible = false;
+				self.setupXR();
+			},
+			function (xhr) {
+				self.loadingBar.progress = (xhr.loaded / xhr.total);
+			},
+			function (error) {
+				console.log('An error happened');
+			}
+		);
+	}
     
     setupXR(){
         this.renderer.xr.enabled = true;
