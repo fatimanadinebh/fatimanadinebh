@@ -139,37 +139,22 @@ class App{
 				);
 
 				college.traverse(function (child) {
-    if (child.isMesh) {
-        let mat = child.material;
-
-        // If material is an array (multi-material mesh)
-        if (Array.isArray(mat)) {
-            mat = mat.map(m => m.clone());
-        } else {
-            mat = mat.clone();
-        }
-        child.material = mat;
-
-        // Universal override: force solid appearance
-        mat.transparent = false;
-        mat.opacity = 1.0;
-        mat.alphaTest = 0.5; // discard fragments below alpha threshold
-        mat.depthWrite = true;
-        mat.depthTest = true;
-        mat.side = THREE.DoubleSide; // render both sides of faces
-        mat.colorWrite = true; // ensure color buffer is written
-
-        // Optional: disable environment reflections that can cause glow
-        mat.envMap = null;
-        mat.emissive = new THREE.Color(0x000000);
-        mat.emissiveIntensity = 0;
-
-        if (child.name.includes("PROXY")) {
-            mat.visible = false;
-            self.proxy = child;
-        }
-    }
-});
+					if (child.isMesh){
+						if (child.name.indexOf("PROXY") !== -1){
+							child.material.visible = false;
+							self.proxy = child;
+						}else if (child.material.name.indexOf('Glass') !== -1){
+							child.material.opacity = 0.1;
+							child.material.transparent = true;
+						}else if (child.material.name.indexOf("SkyBox") !== -1){
+							child.material.dispose();
+							child.material = new THREE.MeshBasicMaterial({
+								color: 0x000000, // fallback black (will be hidden by HDR)
+								side: THREE.BackSide
+							});
+						}
+					}
+				});
 
 				const door1 = college.getObjectByName("LobbyShop_Door__1_");
 				const door2 = college.getObjectByName("LobbyShop_Door__2_");
