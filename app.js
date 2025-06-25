@@ -89,13 +89,13 @@ class App{
 	setEnvironment() {
     const loader = new RGBELoader().setPath(this.assetsPath);
 
-    loader.load('night_sky.hdr', (texture) => {
+    loader.load('hansaplatz_2k.hdr', (texture) => {
         texture.mapping = THREE.EquirectangularReflectionMapping;
 
-        this.scene.background = texture;    // ✅ Realistic HDR skybox
-        this.scene.environment = texture;  // ✅ Affects reflective materials, lighting
+        this.scene.background = texture;    // Set the scene's background to the HDR texture
+        this.scene.environment = texture;  // Use HDR for reflective lighting too
 
-        console.log("✅ HDR skybox loaded successfully");
+        console.log("✅ HDR skybox 'hansaplatz_2k.hdr' loaded successfully");
     }, undefined, (err) => {
         console.error("❌ Failed to load HDR environment:", err);
     });
