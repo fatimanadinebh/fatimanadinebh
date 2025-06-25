@@ -142,34 +142,11 @@ class App{
 
 college.traverse(function (child) {
 	if (child.isMesh) {
-		if (child.name === "Sign_BC__1_") {
-			textureLoader.load('godzilla_1954.jpg', (texture) => {
-				texture.encoding = THREE.sRGBEncoding;
-				texture.flipY = false;
+		console.log("👀 Mesh found:", child.name); // Log everything
 
-				child.material = new THREE.MeshBasicMaterial({
-					map: texture,
-					side: THREE.DoubleSide // to make sure it's visible from both sides
-				});
-
-				child.material.needsUpdate = true;
-				console.log("✅ Applied godzilla_1954.jpg to Sign_BC__1_");
-			});
-		}
-
-		if (child.name === "Sign_BC__2_") {
-			textureLoader.load('godzilla_pic.jpg', (texture) => {
-				texture.encoding = THREE.sRGBEncoding;
-				texture.flipY = false;
-
-				child.material = new THREE.MeshBasicMaterial({
-					map: texture,
-					side: THREE.DoubleSide
-				});
-
-				child.material.needsUpdate = true;
-				console.log("✅ Applied godzilla_pic.jpg to Sign_BC__2_");
-			});
+		// Check this shows your targets
+		if (child.name === "Sign_BC__1_" || child.name === "Sign_BC__2_") {
+			console.log("🎯 Found billboard mesh:", child.name);
 		}
 	}
 });
