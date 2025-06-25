@@ -140,17 +140,12 @@ class App{
 
 				const textureLoader = new THREE.TextureLoader().setPath(self.assetsPath);
 
-college.traverse(function (child) {
-	if (child.isMesh) {
-		console.log("👀 Mesh found:", child.name); // Log everything
-
-		// Check this shows your targets
-		if (child.name === "Sign_BC__1_" || child.name === "Sign_BC__2_") {
-			console.log("🎯 Found billboard mesh:", child.name);
-		}
-	}
+college.traverse((child) => {
+    if (child.isMesh) {
+        console.log("🧩 Found mesh:", child.name, child);
+    }
 });
-
+				
 				const door1 = college.getObjectByName("LobbyShop_Door__1_");
 				const door2 = college.getObjectByName("LobbyShop_Door__2_");
 				const pos = door1.position.clone().sub(door2.position).multiplyScalar(0.5).add(door2.position);
