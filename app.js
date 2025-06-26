@@ -152,21 +152,22 @@ directions.forEach(dir => {
 				self.scene.add(college);
 
 				// ✅ Load Godzilla model
-				loader.load(
-					'godzilla.glb',
-					function (gltf2) {
-						const godzilla = gltf2.scene;
-						godzilla.name = "Godzilla";
-						godzilla.position.set(2, 0, 9);
-						godzilla.scale.set(3, 3, 3);
-						self.scene.add(godzilla);
-						console.log("✅ Godzilla loaded", godzilla);
-					},
-					undefined,
-					function (error) {
-						console.error('❌ Error loading Godzilla model:', error);
-					}
-				);
+loader.load(
+    'godzilla.glb',
+    function (gltf2) {
+        const godzilla = gltf2.scene;
+        godzilla.name = "Godzilla";
+        godzilla.position.set(2.5, 0, 9); // to the right
+        godzilla.rotation.y = Math.PI; // face left (toward King Kong)
+        godzilla.scale.set(3, 3, 3);
+        self.scene.add(godzilla);
+        console.log("✅ Godzilla loaded and facing King Kong", godzilla);
+    },
+    undefined,
+    function (error) {
+        console.error('❌ Error loading Godzilla model:', error);
+    }
+);
 
 // ✅ Load King Kong model
 loader.load(
@@ -174,11 +175,11 @@ loader.load(
     function (gltf3) {
         const kingkong = gltf3.scene;
         kingkong.name = "KingKong";
-        kingkong.position.set(-2.5, 0, 9); // slightly to the left
-	kingkong.rotation.y = Math.PI; // rotate 180 degrees around Y-axis
-        kingkong.scale.set(2, 2, 2);
+        kingkong.position.set(-2.5, 0, 9); // to the left
+        kingkong.rotation.y = 0; // face right (toward Godzilla)
+        kingkong.scale.set(3, 3, 3);
         self.scene.add(kingkong);
-        console.log("✅ King Kong loaded", kingkong);
+        console.log("✅ King Kong loaded and facing Godzilla", kingkong);
     },
     undefined,
     function (error) {
