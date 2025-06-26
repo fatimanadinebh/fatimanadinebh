@@ -54,7 +54,7 @@ class App{
 		this.renderer.outputEncoding = THREE.sRGBEncoding;
 		container.appendChild(this.renderer.domElement);
 
-		this.renderer.domElement.style.cursor = 'url("./assets/cursors/heart_cursor.png") 16 16, auto';
+		this.renderer.domElement.style.cursor = 'pointer';
 
 		// ✅ Realistic skybox environment
 		this.setEnvironment();
