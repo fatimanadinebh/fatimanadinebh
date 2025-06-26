@@ -48,6 +48,10 @@ class App{
 		this.ambientLight = new THREE.HemisphereLight(0xFFFFFF, 0xAAAAAA, 1.2);
 this.scene.add(this.ambientLight);
 
+		this.directionalLight = new THREE.DirectionalLight(0xffffff, 1.2);
+this.directionalLight.position.set(5, 10, 7.5);
+this.scene.add(this.directionalLight);
+
 		this.renderer = new THREE.WebGLRenderer({ antialias: true });
 		this.renderer.setPixelRatio(window.devicePixelRatio);
 		this.renderer.setSize(window.innerWidth, window.innerHeight);
