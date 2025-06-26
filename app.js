@@ -177,7 +177,7 @@ loader.load(
         kingkong.name = "KingKong";
         kingkong.position.set(-2.5, 0, 9); // left side
         kingkong.rotation.y = -Math.PI / 2;
-        kingkong.scale.set(2, 2, 2);
+        kingkong.scale.set(1.5, 1.5, 1.5);
         self.scene.add(kingkong);
         console.log("✅ King Kong loaded and facing Godzilla", kingkong);
     },
