@@ -44,9 +44,12 @@ class App{
 			}
 		}, { once: true });
 
-		// 🌤️ Soft white ambient light (sky and ground both white-ish)
-this.ambientLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.02);
-this.scene.add(this.ambientLight);
+// Upward-facing rainbow directional light (fill)
+this.fillLight = new THREE.DirectionalLight(0xffffff, 0.4); // softer light
+this.fillLight.position.set(0, -5, 0); // from below
+this.fillLight.target.position.set(0, 1, 0); // point upward
+this.scene.add(this.fillLight);
+this.scene.add(this.fillLight.target);
 
 		// ✅ Directional light pointing straight down
 this.directionalLight = new THREE.DirectionalLight(0xffffff, 1.2);
@@ -391,6 +394,7 @@ console.log("🌈 Wall meshes collected:", self.wallMeshes.length);
 
     // ✅ Animate directional light with rainbow hue
     this.directionalLight.color.setHSL(hue, 1, 0.6);
+    this.fillLight.color.setHSL(hue, 1, 0.6); // 🌈 match the rainbow gradient
 
     if (this.renderer.xr.isPresenting){
         let moveGaze = false;
