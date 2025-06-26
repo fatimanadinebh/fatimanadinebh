@@ -44,11 +44,8 @@ class App{
 			}
 		}, { once: true });
 
-		// ✅ Light (adjusted)
-		this.ambientLight = new THREE.HemisphereLight(0xFFFFFF, 0xAAAAAA, 1.2);
-this.scene.add(this.ambientLight);
-
-		this.directionalLight = new THREE.DirectionalLight(0xffffff, 1.2);
+		// ✅ Light: only directional with rainbow effect
+this.directionalLight = new THREE.DirectionalLight(0xffffff, 1.2);
 this.directionalLight.position.set(5, 10, 7.5);
 this.scene.add(this.directionalLight);
 
@@ -376,75 +373,56 @@ console.log("🌈 Wall meshes collected:", self.wallMeshes.length);
         this.boardShown = name;
     }
 
-	render( timestamp, frame ){
-	const dt = this.clock.getDelta();
+	render(timestamp, frame){
+    const dt = this.clock.getDelta();
+    const elapsed = this.clock.getElapsedTime();
+    const hue = (elapsed * 10 % 360) / 360;
 
-	const elapsed = this.clock.getElapsedTime();
-	const hue = (elapsed * 10 % 360) / 360;
+    // ✅ Animate directional light with rainbow hue
+    this.directionalLight.color.setHSL(hue, 1, 0.6);
 
-this.ambientLight.color.setHSL(hue, 1, 0.6);
-this.ambientLight.groundColor.setHSL((hue + 0.5) % 1, 1, 0.4);
+    if (this.renderer.xr.isPresenting){
+        let moveGaze = false;
 
-this.directionalLight.color.setHSL(hue, 1, 0.6); // <- sync to same hue
+        if (this.useGaze && this.gazeController !== undefined){
+            this.gazeController.update();
+            moveGaze = (this.gazeController.mode == GazeController.Modes.MOVE);
+        }
 
-	// 🌈 Animate wall colors
-	if (this.wallMeshes) {
-		this.wallMeshes.forEach((mesh, index) => {
-			const offsetHue = (hue + index * 0.1) % 1;
-			const material = mesh.material;
+        if (this.selectPressed || moveGaze){
+            this.moveDolly(dt);
 
-			if (Array.isArray(material)) {
-				material.forEach(mat => {
-					if (mat && mat.color) mat.color.setHSL(offsetHue, 1, 0.6);
-				});
-			} else if (material && material.color) {
-				material.color.setHSL(offsetHue, 1, 0.6);
-			}
-		});
-	}
+            if (this.boardData){
+                const scene = this.scene;
+                const dollyPos = this.dolly.getWorldPosition(new THREE.Vector3());
+                let boardFound = false;
 
-	if (this.renderer.xr.isPresenting){
-		let moveGaze = false;
+                Object.entries(this.boardData).forEach(([name, info]) => {
+                    const obj = scene.getObjectByName(name);
+                    if (obj !== undefined){
+                        const pos = obj.getWorldPosition(new THREE.Vector3());
+                        if (dollyPos.distanceTo(pos) < 3){
+                            boardFound = true;
+                            if (this.boardShown !== name) this.showInfoboard(name, info, pos);
+                        }
+                    }
+                });
 
-		if (this.useGaze && this.gazeController !== undefined){
-			this.gazeController.update();
-			moveGaze = (this.gazeController.mode == GazeController.Modes.MOVE);
-		}
+                if (!boardFound){
+                    this.boardShown = "";
+                    this.ui.visible = false;
+                }
+            }
+        }
+    }
 
-		if (this.selectPressed || moveGaze){
-			this.moveDolly(dt);
+    if (this.immersive != this.renderer.xr.isPresenting){
+        this.resize();
+        this.immersive = this.renderer.xr.isPresenting;
+    }
 
-			if (this.boardData){
-				const scene = this.scene;
-				const dollyPos = this.dolly.getWorldPosition(new THREE.Vector3());
-				let boardFound = false;
-
-				Object.entries(this.boardData).forEach(([name, info]) => {
-					const obj = scene.getObjectByName(name);
-					if (obj !== undefined){
-						const pos = obj.getWorldPosition(new THREE.Vector3());
-						if (dollyPos.distanceTo(pos) < 3){
-							boardFound = true;
-							if (this.boardShown !== name) this.showInfoboard(name, info, pos);
-						}
-					}
-				});
-
-				if (!boardFound){
-					this.boardShown = "";
-					this.ui.visible = false;
-				}
-			}
-		}
-	}
-
-	if (this.immersive != this.renderer.xr.isPresenting){
-		this.resize();
-		this.immersive = this.renderer.xr.isPresenting;
-	}
-
-	this.stats.update();
-	this.renderer.render(this.scene, this.camera);
+    this.stats.update();
+    this.renderer.render(this.scene, this.camera);
 }
 }
 
