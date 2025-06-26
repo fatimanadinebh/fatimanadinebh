@@ -55,6 +55,8 @@ class App{
 		this.renderer.outputEncoding = THREE.sRGBEncoding;
 		container.appendChild(this.renderer.domElement);
 
+		this.renderer.domElement.style.cursor = 'url("https://upload.wikimedia.org/wikipedia/commons/3/3a/Cursor-hand.svg") 4 4, auto';
+
 		// ✅ Realistic skybox environment
 		this.setEnvironment();
 
