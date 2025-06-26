@@ -141,6 +141,12 @@ this.scene.add(this.ambientLight);
 				college.traverse((child) => {
     if (!child.isMesh) return;
 
+        // 🌈 Step 1: Collect wall meshes for rainbow animation
+    self.wallMeshes = self.wallMeshes || [];
+    if (child.name && child.name.toLowerCase().includes("wall")) {
+        self.wallMeshes.push(child);
+    }
+
     const oldMat = child.material;
 
     // Replace MeshBasicMaterial (unlit) with standard material
@@ -156,7 +162,7 @@ this.scene.add(this.ambientLight);
         });
     }
 
-    // Strip lightMap and emissive, just in case
+    // Strip lightMap and emissive
     if (child.material.lightMap) child.material.lightMap = null;
     if (child.material.emissive) child.material.emissive.set(0x000000);
     if (child.material.envMap) child.material.envMap = null;
@@ -176,11 +182,13 @@ this.scene.add(this.ambientLight);
         });
     }
 
-    // Optional: Fix normals if weird shading
+    // Optional: Fix normals
     if (child.geometry) {
         child.geometry.computeVertexNormals();
     }
 });
+
+console.log("🌈 Wall meshes collected:", self.wallMeshes.length);
 
 				const door1 = college.getObjectByName("LobbyShop_Door__1_");
 				const door2 = college.getObjectByName("LobbyShop_Door__2_");
@@ -364,53 +372,73 @@ this.scene.add(this.ambientLight);
     }
 
 	render( timestamp, frame ){
-        const dt = this.clock.getDelta();
+	const dt = this.clock.getDelta();
 
-		const elapsed = this.clock.getElapsedTime();
-const hue = (elapsed * 10 % 360) / 360; // Adjust speed with *10
-this.ambientLight.color.setHSL(hue, 1, 0.6); // Sky color
-this.ambientLight.groundColor.setHSL((hue + 0.5) % 1, 1, 0.4); // Ground color
-        
-        if (this.renderer.xr.isPresenting){
-            let moveGaze = false;
-        
-            if ( this.useGaze && this.gazeController!==undefined){
-                this.gazeController.update();
-                moveGaze = (this.gazeController.mode == GazeController.Modes.MOVE);
-            }
-        
-            if (this.selectPressed || moveGaze){
-                this.moveDolly(dt);
-                if (this.boardData){
-                    const scene = this.scene;
-                    const dollyPos = this.dolly.getWorldPosition( new THREE.Vector3() );
-                    let boardFound = false;
-                    Object.entries(this.boardData).forEach(([name, info]) => {
-                        const obj = scene.getObjectByName( name );
-                        if (obj !== undefined){
-                            const pos = obj.getWorldPosition( new THREE.Vector3() );
-                            if (dollyPos.distanceTo( pos ) < 3){
-                                boardFound = true;
-                                if ( this.boardShown !== name) this.showInfoboard( name, info, pos );
-                            }
-                        }
-                    });
-                    if (!boardFound){
-                        this.boardShown = "";
-                        this.ui.visible = false;
-                    }
-                }
-            }
-        }
-        
-        if ( this.immersive != this.renderer.xr.isPresenting){
-            this.resize();
-            this.immersive = this.renderer.xr.isPresenting;
-        }
-        
-        this.stats.update();
-		this.renderer.render(this.scene, this.camera);
+	const elapsed = this.clock.getElapsedTime();
+	const hue = (elapsed * 10 % 360) / 360; // Adjust speed with *10
+
+	this.ambientLight.color.setHSL(hue, 1, 0.6); // Sky color
+	this.ambientLight.groundColor.setHSL((hue + 0.5) % 1, 1, 0.4); // Ground color
+
+	// 🌈 Animate wall colors
+	if (this.wallMeshes) {
+		this.wallMeshes.forEach((mesh, index) => {
+			const offsetHue = (hue + index * 0.1) % 1;
+			const material = mesh.material;
+
+			if (Array.isArray(material)) {
+				material.forEach(mat => {
+					if (mat && mat.color) mat.color.setHSL(offsetHue, 1, 0.6);
+				});
+			} else if (material && material.color) {
+				material.color.setHSL(offsetHue, 1, 0.6);
+			}
+		});
 	}
+
+	if (this.renderer.xr.isPresenting){
+		let moveGaze = false;
+
+		if (this.useGaze && this.gazeController !== undefined){
+			this.gazeController.update();
+			moveGaze = (this.gazeController.mode == GazeController.Modes.MOVE);
+		}
+
+		if (this.selectPressed || moveGaze){
+			this.moveDolly(dt);
+
+			if (this.boardData){
+				const scene = this.scene;
+				const dollyPos = this.dolly.getWorldPosition(new THREE.Vector3());
+				let boardFound = false;
+
+				Object.entries(this.boardData).forEach(([name, info]) => {
+					const obj = scene.getObjectByName(name);
+					if (obj !== undefined){
+						const pos = obj.getWorldPosition(new THREE.Vector3());
+						if (dollyPos.distanceTo(pos) < 3){
+							boardFound = true;
+							if (this.boardShown !== name) this.showInfoboard(name, info, pos);
+						}
+					}
+				});
+
+				if (!boardFound){
+					this.boardShown = "";
+					this.ui.visible = false;
+				}
+			}
+		}
+	}
+
+	if (this.immersive != this.renderer.xr.isPresenting){
+		this.resize();
+		this.immersive = this.renderer.xr.isPresenting;
+	}
+
+	this.stats.update();
+	this.renderer.render(this.scene, this.camera);
+}
 }
 
 export { App };
