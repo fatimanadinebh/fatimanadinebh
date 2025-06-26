@@ -93,7 +93,7 @@ this.scene.add(this.ambientLight);
         texture.mapping = THREE.EquirectangularReflectionMapping;
 
         this.scene.background = texture;    // Set the scene's background to the HDR texture
-        this.scene.environment = texture;  // Use HDR for reflective lighting too
+        this.scene.environment = null;  // Use HDR for reflective lighting too
 
         console.log("✅ HDR skybox 'hansaplatz_2k.hdr' loaded successfully");
     }, undefined, (err) => {
@@ -138,40 +138,54 @@ this.scene.add(this.ambientLight);
 					}
 				);
 
-				college.traverse(function (child) {
+				college.traverse((child) => {
     if (child.isMesh) {
-        // ✅ Convert any MeshBasicMaterial or unlit ShaderMaterial to MeshStandardMaterial
-        if (
-            child.material &&
-            (!child.material.isMeshStandardMaterial || child.material.name.toLowerCase().includes("unlit"))
-        ) {
-            const oldMat = child.material;
-            child.material = new THREE.MeshStandardMaterial({
-                color: oldMat.color || new THREE.Color(0xffffff),
-                map: oldMat.map || null,
-                metalness: 0.2,
-                roughness: 0.8,
-                transparent: oldMat.transparent || false,
-                opacity: oldMat.opacity !== undefined ? oldMat.opacity : 1.0
-            });
+        // Replace all non-light-reactive materials
+        if (!child.material.isMeshStandardMaterial) {
+            let oldMat = child.material;
+
+            // Handle material arrays (multi-material meshes)
+            if (Array.isArray(oldMat)) {
+                child.material = oldMat.map((mat) =>
+                    new THREE.MeshStandardMaterial({
+                        color: mat.color || new THREE.Color(0xffffff),
+                        map: mat.map || null,
+                        metalness: 0.2,
+                        roughness: 0.8,
+                        transparent: mat.transparent || false,
+                        opacity: mat.opacity !== undefined ? mat.opacity : 1.0,
+                    })
+                );
+            } else {
+                child.material = new THREE.MeshStandardMaterial({
+                    color: oldMat.color || new THREE.Color(0xffffff),
+                    map: oldMat.map || null,
+                    metalness: 0.2,
+                    roughness: 0.8,
+                    transparent: oldMat.transparent || false,
+                    opacity: oldMat.opacity !== undefined ? oldMat.opacity : 1.0,
+                });
+            }
         }
 
-        // ☁️ Hide proxy mesh
+        // Proxy mesh (invisible for collisions)
         if (child.name.includes("PROXY")) {
             child.material.visible = false;
             self.proxy = child;
+        }
 
-        // ✨ Transparent glass
-        } else if (child.material.name.includes("Glass")) {
+        // Glass (transparent)
+        else if (child.material.name && child.material.name.includes("Glass")) {
             child.material.opacity = 0.1;
             child.material.transparent = true;
+        }
 
-        // 🌌 Custom black skybox
-        } else if (child.material.name.includes("SkyBox")) {
+        // Skybox
+        else if (child.material.name && child.material.name.includes("SkyBox")) {
             child.material.dispose();
             child.material = new THREE.MeshBasicMaterial({
                 color: 0x000000,
-                side: THREE.BackSide
+                side: THREE.BackSide,
             });
         }
     }
