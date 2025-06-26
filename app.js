@@ -139,63 +139,46 @@ this.scene.add(this.ambientLight);
 				);
 
 				college.traverse((child) => {
-    if (child.isMesh) {
-        let oldMat = child.material;
+    if (!child.isMesh) return;
 
-        // Replace non-standard materials
-        if (!oldMat.isMeshStandardMaterial) {
-            if (Array.isArray(oldMat)) {
-                child.material = oldMat.map((mat) =>
-                    new THREE.MeshStandardMaterial({
-                        color: mat.color || new THREE.Color(0xffffff),
-                        map: mat.map || null,
-                        metalness: 0.2,
-                        roughness: 0.8,
-                        transparent: mat.transparent || false,
-                        opacity: mat.opacity !== undefined ? mat.opacity : 1.0,
-                        envMap: null, // ✅ Disable HDR reflections
-                    })
-                );
-            } else {
-                child.material = new THREE.MeshStandardMaterial({
-                    color: oldMat.color || new THREE.Color(0xffffff),
-                    map: oldMat.map || null,
-                    metalness: 0.2,
-                    roughness: 0.8,
-                    transparent: oldMat.transparent || false,
-                    opacity: oldMat.opacity !== undefined ? oldMat.opacity : 1.0,
-                    envMap: null, // ✅ Disable HDR reflections
-                });
-            }
-        }
+    const oldMat = child.material;
 
-        // Force all standard materials to ignore HDR reflections
-        if (Array.isArray(child.material)) {
-            child.material.forEach((mat) => mat.envMap = null);
-        } else {
-            child.material.envMap = null;
-        }
+    // Replace MeshBasicMaterial (unlit) with standard material
+    if (oldMat instanceof THREE.MeshBasicMaterial || !oldMat.isMeshStandardMaterial) {
+        child.material = new THREE.MeshStandardMaterial({
+            color: oldMat.color || new THREE.Color(0xffffff),
+            map: oldMat.map || null,
+            metalness: 0.2,
+            roughness: 0.8,
+            transparent: oldMat.transparent || false,
+            opacity: oldMat.opacity !== undefined ? oldMat.opacity : 1.0,
+            envMap: null
+        });
+    }
 
-        // Proxy mesh (invisible for collisions)
-        if (child.name.includes("PROXY")) {
-            child.material.visible = false;
-            self.proxy = child;
-        }
+    // Strip lightMap and emissive, just in case
+    if (child.material.lightMap) child.material.lightMap = null;
+    if (child.material.emissive) child.material.emissive.set(0x000000);
+    if (child.material.envMap) child.material.envMap = null;
 
-        // Glass (transparent)
-        else if (child.material.name && child.material.name.includes("Glass")) {
-            child.material.opacity = 0.1;
-            child.material.transparent = true;
-        }
+    // Fix proxy, glass, skybox behavior
+    if (child.name.includes("PROXY")) {
+        child.material.visible = false;
+        self.proxy = child;
+    } else if (child.material.name && child.material.name.includes("Glass")) {
+        child.material.opacity = 0.1;
+        child.material.transparent = true;
+    } else if (child.material.name && child.material.name.includes("SkyBox")) {
+        child.material.dispose();
+        child.material = new THREE.MeshBasicMaterial({
+            color: 0x000000,
+            side: THREE.BackSide
+        });
+    }
 
-        // Skybox
-        else if (child.material.name && child.material.name.includes("SkyBox")) {
-            child.material.dispose();
-            child.material = new THREE.MeshBasicMaterial({
-                color: 0x000000,
-                side: THREE.BackSide,
-            });
-        }
+    // Optional: Fix normals if weird shading
+    if (child.geometry) {
+        child.geometry.computeVertexNormals();
     }
 });
 
