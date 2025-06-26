@@ -143,7 +143,7 @@ this.scene.add(this.ambientLight);
 
         // 🌈 Step 1: Collect wall meshes for rainbow animation
     self.wallMeshes = self.wallMeshes || [];
-    if (child.name && child.name.toLowerCase().includes("wall")) {
+    if (child.name && child.name.toLowerCase().includes("Wall")) {
         self.wallMeshes.push(child);
     }
 
