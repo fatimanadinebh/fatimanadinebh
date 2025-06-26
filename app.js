@@ -175,7 +175,8 @@ loader.load(
         const kingkong = gltf3.scene;
         kingkong.name = "KingKong";
         kingkong.position.set(-2.5, 0, 9); // slightly to the left
-        kingkong.scale.set(3, 3, 3);
+	kingkong.rotation.y = Math.PI; // rotate 180 degrees around Y-axis
+        kingkong.scale.set(2, 2, 2);
         self.scene.add(kingkong);
         console.log("✅ King Kong loaded", kingkong);
     },
