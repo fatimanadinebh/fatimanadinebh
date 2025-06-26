@@ -45,7 +45,7 @@ class App{
 		}, { once: true });
 
 		// ✅ Light (adjusted)
-		this.ambientLight = new THREE.HemisphereLight(0xffffff, 0x888888, 1.2);
+		this.ambientLight = new THREE.HemisphereLight(0xFFFFFF, 0xAAAAAA, 1.2);
 this.scene.add(this.ambientLight);
 
 		this.renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -341,10 +341,9 @@ this.scene.add(this.ambientLight);
         const dt = this.clock.getDelta();
 
 		const elapsed = this.clock.getElapsedTime();
-const hue = (elapsed * 10 % 360) / 360; // cycles hue 0–1
-
-this.ambientLight.color.setHSL(hue, 1, 0.6);       // sky color
-this.ambientLight.groundColor.setHSL((hue + 0.5) % 1, 1, 0.4); // ground color (shifted hue)
+const hue = (elapsed * 10 % 360) / 360; // Adjust speed with *10
+this.ambientLight.color.setHSL(hue, 1, 0.6); // Sky color
+this.ambientLight.groundColor.setHSL((hue + 0.5) % 1, 1, 0.4); // Ground color
         
         if (this.renderer.xr.isPresenting){
             let moveGaze = false;
