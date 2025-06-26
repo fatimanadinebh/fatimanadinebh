@@ -370,6 +370,14 @@ this.scene.add(this.ambientLight);
 const hue = (elapsed * 10 % 360) / 360; // Adjust speed with *10
 this.ambientLight.color.setHSL(hue, 1, 0.6); // Sky color
 this.ambientLight.groundColor.setHSL((hue + 0.5) % 1, 1, 0.4); // Ground color
+
+		// 🌈 Rainbow debug PointLight (player-following)
+    if (!this.debugLight) {
+        this.debugLight = new THREE.PointLight(0xffffff, 2, 30); // intensity 2, range 30
+        this.scene.add(this.debugLight);
+    }
+    this.debugLight.position.copy(this.dolly.position);
+    this.debugLight.color.setHSL(hue, 1, 0.6);
         
         if (this.renderer.xr.isPresenting){
             let moveGaze = false;
