@@ -176,8 +176,8 @@ loader.load(
         const kingkong = gltf3.scene;
         kingkong.name = "KingKong";
         kingkong.position.set(-2.5, 0, 9); // left side
-        kingkong.rotation.y = Math.PI / 2; // face right (toward Godzilla)
-        kingkong.scale.set(3, 3, 3);
+        kingkong.rotation.y = -Math.PI / 2;
+        kingkong.scale.set(2, 2, 2);
         self.scene.add(kingkong);
         console.log("✅ King Kong loaded and facing Godzilla", kingkong);
     },
