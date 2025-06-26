@@ -56,13 +56,28 @@ this.directionalLight.shadow.radius = 4;
 this.directionalLight.shadow.mapSize.width = 1024;
 this.directionalLight.shadow.mapSize.height = 1024;
 
-		// Upward-facing rainbow directional light (fill)
-this.fillLight = new THREE.DirectionalLight(0xffffff, 0.4); // softer light
-this.fillLight.position.set(0, -5, 0); // from below
-this.fillLight.target.position.set(0, 1, 0); // point upward
-this.scene.add(this.fillLight);
-this.scene.add(this.fillLight.target);
-		
+		// ➕ Extra directional lights from all 5 other sides
+this.rainbowLights = [];
+
+const directions = [
+    { pos: [0, -10, 0], target: [0, 1, 0] },   // Bottom → Up
+    { pos: [10, 0, 0], target: [0, 0, 0] },    // Right → Center
+    { pos: [-10, 0, 0], target: [0, 0, 0] },   // Left → Center
+    { pos: [0, 0, 10], target: [0, 0, 0] },    // Front → Center
+    { pos: [0, 0, -10], target: [0, 0, 0] }    // Back → Center
+];
+
+directions.forEach(dir => {
+    const light = new THREE.DirectionalLight(0xffffff, 0.5); // softer than top
+    light.position.set(...dir.pos);
+    const target = new THREE.Object3D();
+    target.position.set(...dir.target);
+    this.scene.add(target);
+    light.target = target;
+    this.scene.add(light);
+    this.rainbowLights.push(light);
+});
+	
 		this.renderer = new THREE.WebGLRenderer({ antialias: true });
 		this.renderer.setPixelRatio(window.devicePixelRatio);
 		this.renderer.setSize(window.innerWidth, window.innerHeight);
@@ -394,7 +409,11 @@ console.log("🌈 Wall meshes collected:", self.wallMeshes.length);
 
     // ✅ Animate directional light with rainbow hue
     this.directionalLight.color.setHSL(hue, 1, 0.6);
-    this.fillLight.color.setHSL(hue, 1, 0.6); // 🌈 match the rainbow gradient
+		
+    // 🌈 Sync extra rainbow lights
+this.rainbowLights.forEach((light, i) => {
+    light.color.setHSL(hue, 1, 0.6);
+});
 
     if (this.renderer.xr.isPresenting){
         let moveGaze = false;
