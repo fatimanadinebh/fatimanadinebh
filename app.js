@@ -168,6 +168,23 @@ directions.forEach(dir => {
 					}
 				);
 
+// ✅ Load King Kong model
+loader.load(
+    'kingkong.glb',
+    function (gltf3) {
+        const kingkong = gltf3.scene;
+        kingkong.name = "KingKong";
+        kingkong.position.set(-2.5, 0, 9); // slightly to the left
+        kingkong.scale.set(3, 3, 3);
+        self.scene.add(kingkong);
+        console.log("✅ King Kong loaded", kingkong);
+    },
+    undefined,
+    function (error) {
+        console.error('❌ Error loading King Kong model:', error);
+    }
+);
+
 				college.traverse((child) => {
     if (!child.isMesh) return;
 
