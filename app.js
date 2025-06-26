@@ -141,21 +141,10 @@ this.scene.add(this.ambientLight);
 				college.traverse((child) => {
     if (!child.isMesh) return;
 
-    // 🌈 Step 1: Collect wall meshes based on shape (not just name)
+    // 🌈 Collect wall meshes (broad match)
     self.wallMeshes = self.wallMeshes || [];
-
-    const bbox = new THREE.Box3().setFromObject(child);
-    const size = new THREE.Vector3();
-    bbox.getSize(size);
-
-    const width = size.x;
-    const height = size.y;
-    const depth = size.z;
-
-    // A mesh is considered a "wall" if it's tall and flat
-    const isWallShape = height > 1.5 && (width < 0.3 || depth < 0.3);
-
-    if (isWallShape) {
+    const mat = child.material;
+    if (mat && mat.isMeshStandardMaterial && !child.name.includes("Glass")) {
         self.wallMeshes.push(child);
     }
 
@@ -200,7 +189,27 @@ this.scene.add(this.ambientLight);
     }
 });
 
-console.log("🌈 Wall meshes collected by shape:", self.wallMeshes.length);
+console.log("🌈 Wall meshes collected:", self.wallMeshes.length);
+
+				const door1 = college.getObjectByName("LobbyShop_Door__1_");
+				const door2 = college.getObjectByName("LobbyShop_Door__2_");
+				const pos = door1.position.clone().sub(door2.position).multiplyScalar(0.5).add(door2.position);
+				const obj = new THREE.Object3D();
+				obj.name = "LobbyShop";
+				obj.position.copy(pos);
+				college.add(obj);
+
+				self.loadingBar.visible = false;
+				self.setupXR();
+			},
+			function (xhr) {
+				self.loadingBar.progress = (xhr.loaded / xhr.total);
+			},
+			function (error) {
+				console.log('An error happened');
+			}
+		);
+	}
     
     setupXR(){
         this.renderer.xr.enabled = true;
