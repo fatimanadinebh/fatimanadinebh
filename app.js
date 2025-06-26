@@ -13,7 +13,6 @@ class App{
 	constructor(){
 		const container = document.createElement( 'div' );
 		document.body.appendChild( container );
-		document.body.style.cursor = 'url("./assets/cursors/heart_cursor.png") 16 16, auto';
 
 		this.assetsPath = './assets/';
         
@@ -55,7 +54,7 @@ class App{
 		this.renderer.outputEncoding = THREE.sRGBEncoding;
 		container.appendChild(this.renderer.domElement);
 
-		this.renderer.domElement.style.cursor = 'url("https://upload.wikimedia.org/wikipedia/commons/3/3a/Cursor-hand.svg") 4 4, auto';
+		this.renderer.domElement.style.cursor = 'url("./assets/cursors/heart_cursor.png") 16 16, auto';
 
 		// ✅ Realistic skybox environment
 		this.setEnvironment();
