@@ -44,13 +44,6 @@ class App{
 			}
 		}, { once: true });
 
-// Upward-facing rainbow directional light (fill)
-this.fillLight = new THREE.DirectionalLight(0xffffff, 0.4); // softer light
-this.fillLight.position.set(0, -5, 0); // from below
-this.fillLight.target.position.set(0, 1, 0); // point upward
-this.scene.add(this.fillLight);
-this.scene.add(this.fillLight.target);
-
 		// ✅ Directional light pointing straight down
 this.directionalLight = new THREE.DirectionalLight(0xffffff, 1.2);
 this.directionalLight.position.set(0, 10, 0); // directly above the scene
@@ -62,6 +55,13 @@ this.directionalLight.shadow.bias = -0.001;
 this.directionalLight.shadow.radius = 4;
 this.directionalLight.shadow.mapSize.width = 1024;
 this.directionalLight.shadow.mapSize.height = 1024;
+
+		// Upward-facing rainbow directional light (fill)
+this.fillLight = new THREE.DirectionalLight(0xffffff, 0.4); // softer light
+this.fillLight.position.set(0, -5, 0); // from below
+this.fillLight.target.position.set(0, 1, 0); // point upward
+this.scene.add(this.fillLight);
+this.scene.add(this.fillLight.target);
 		
 		this.renderer = new THREE.WebGLRenderer({ antialias: true });
 		this.renderer.setPixelRatio(window.devicePixelRatio);
