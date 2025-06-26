@@ -139,32 +139,42 @@ this.scene.add(this.ambientLight);
 				);
 
 				college.traverse(function (child) {
-	if (child.isMesh) {
-		// 🔄 Convert non-light-reactive material to MeshStandardMaterial
-		if (child.material && child.material.isMeshBasicMaterial) {
-			child.material = new THREE.MeshStandardMaterial({
-				color: child.material.color,
-				map: child.material.map || null,
-			});
-		}
+    if (child.isMesh) {
+        // ✅ Convert any MeshBasicMaterial or unlit ShaderMaterial to MeshStandardMaterial
+        if (
+            child.material &&
+            (!child.material.isMeshStandardMaterial || child.material.name.toLowerCase().includes("unlit"))
+        ) {
+            const oldMat = child.material;
+            child.material = new THREE.MeshStandardMaterial({
+                color: oldMat.color || new THREE.Color(0xffffff),
+                map: oldMat.map || null,
+                metalness: 0.2,
+                roughness: 0.8,
+                transparent: oldMat.transparent || false,
+                opacity: oldMat.opacity !== undefined ? oldMat.opacity : 1.0
+            });
+        }
 
-		// ⚙️ Special mesh handling
-		if (child.name.indexOf("PROXY") !== -1) {
-			child.material.visible = false;
-			self.proxy = child;
+        // ☁️ Hide proxy mesh
+        if (child.name.includes("PROXY")) {
+            child.material.visible = false;
+            self.proxy = child;
 
-		} else if (child.material.name.indexOf('Glass') !== -1) {
-			child.material.opacity = 0.1;
-			child.material.transparent = true;
+        // ✨ Transparent glass
+        } else if (child.material.name.includes("Glass")) {
+            child.material.opacity = 0.1;
+            child.material.transparent = true;
 
-		} else if (child.material.name.indexOf("SkyBox") !== -1) {
-			child.material.dispose();
-			child.material = new THREE.MeshBasicMaterial({
-				color: 0x000000, // fallback black (HDR will override)
-				side: THREE.BackSide
-			});
-		}
-	}
+        // 🌌 Custom black skybox
+        } else if (child.material.name.includes("SkyBox")) {
+            child.material.dispose();
+            child.material = new THREE.MeshBasicMaterial({
+                color: 0x000000,
+                side: THREE.BackSide
+            });
+        }
+    }
 });
 
 				const door1 = college.getObjectByName("LobbyShop_Door__1_");
