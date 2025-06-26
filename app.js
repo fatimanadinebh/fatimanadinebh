@@ -139,22 +139,33 @@ this.scene.add(this.ambientLight);
 				);
 
 				college.traverse(function (child) {
-					if (child.isMesh){
-						if (child.name.indexOf("PROXY") !== -1){
-							child.material.visible = false;
-							self.proxy = child;
-						}else if (child.material.name.indexOf('Glass') !== -1){
-							child.material.opacity = 0.1;
-							child.material.transparent = true;
-						}else if (child.material.name.indexOf("SkyBox") !== -1){
-							child.material.dispose();
-							child.material = new THREE.MeshBasicMaterial({
-								color: 0x000000, // fallback black (will be hidden by HDR)
-								side: THREE.BackSide
-							});
-						}
-					}
-				});
+	if (child.isMesh) {
+		// 🔄 Convert non-light-reactive material to MeshStandardMaterial
+		if (child.material && child.material.isMeshBasicMaterial) {
+			child.material = new THREE.MeshStandardMaterial({
+				color: child.material.color,
+				map: child.material.map || null,
+			});
+		}
+
+		// ⚙️ Special mesh handling
+		if (child.name.indexOf("PROXY") !== -1) {
+			child.material.visible = false;
+			self.proxy = child;
+
+		} else if (child.material.name.indexOf('Glass') !== -1) {
+			child.material.opacity = 0.1;
+			child.material.transparent = true;
+
+		} else if (child.material.name.indexOf("SkyBox") !== -1) {
+			child.material.dispose();
+			child.material = new THREE.MeshBasicMaterial({
+				color: 0x000000, // fallback black (HDR will override)
+				side: THREE.BackSide
+			});
+		}
+	}
+});
 
 				const door1 = college.getObjectByName("LobbyShop_Door__1_");
 				const door2 = college.getObjectByName("LobbyShop_Door__2_");
