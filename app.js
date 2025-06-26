@@ -140,11 +140,10 @@ this.scene.add(this.ambientLight);
 
 				college.traverse((child) => {
     if (child.isMesh) {
-        // Replace all non-light-reactive materials
-        if (!child.material.isMeshStandardMaterial) {
-            let oldMat = child.material;
+        let oldMat = child.material;
 
-            // Handle material arrays (multi-material meshes)
+        // Replace non-standard materials
+        if (!oldMat.isMeshStandardMaterial) {
             if (Array.isArray(oldMat)) {
                 child.material = oldMat.map((mat) =>
                     new THREE.MeshStandardMaterial({
@@ -154,6 +153,7 @@ this.scene.add(this.ambientLight);
                         roughness: 0.8,
                         transparent: mat.transparent || false,
                         opacity: mat.opacity !== undefined ? mat.opacity : 1.0,
+                        envMap: null, // ✅ Disable HDR reflections
                     })
                 );
             } else {
@@ -164,8 +164,16 @@ this.scene.add(this.ambientLight);
                     roughness: 0.8,
                     transparent: oldMat.transparent || false,
                     opacity: oldMat.opacity !== undefined ? oldMat.opacity : 1.0,
+                    envMap: null, // ✅ Disable HDR reflections
                 });
             }
+        }
+
+        // Force all standard materials to ignore HDR reflections
+        if (Array.isArray(child.material)) {
+            child.material.forEach((mat) => mat.envMap = null);
+        } else {
+            child.material.envMap = null;
         }
 
         // Proxy mesh (invisible for collisions)
