@@ -45,7 +45,7 @@ class App{
 		}, { once: true });
 
 		// 🌤️ Soft white ambient light (sky and ground both white-ish)
-this.ambientLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.1);
+this.ambientLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.01);
 this.scene.add(this.ambientLight);
 
 		// ✅ Directional light pointing straight down
