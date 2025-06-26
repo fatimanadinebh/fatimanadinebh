@@ -141,12 +141,6 @@ this.scene.add(this.ambientLight);
 				college.traverse((child) => {
     if (!child.isMesh) return;
 
-    // 🌈 Step 1: Store wall meshes for rainbow color updates
-    self.wallMeshes = self.wallMeshes || [];
-    if (child.name && child.name.toLowerCase().includes("wall")) {
-        self.wallMeshes.push(child);
-    }
-
     const oldMat = child.material;
 
     // Replace MeshBasicMaterial (unlit) with standard material
@@ -376,14 +370,6 @@ this.scene.add(this.ambientLight);
 const hue = (elapsed * 10 % 360) / 360; // Adjust speed with *10
 this.ambientLight.color.setHSL(hue, 1, 0.6); // Sky color
 this.ambientLight.groundColor.setHSL((hue + 0.5) % 1, 1, 0.4); // Ground color
-
-		// 🌈 Animate wall colors
-if (this.wallMeshes) {
-    this.wallMeshes.forEach((mesh, index) => {
-        const offsetHue = (hue + index * 0.1) % 1; // slight shift per wall
-        mesh.material.color.setHSL(offsetHue, 0.8, 0.5);
-    });
-}
         
         if (this.renderer.xr.isPresenting){
             let moveGaze = false;
