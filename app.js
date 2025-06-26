@@ -380,10 +380,12 @@ console.log("🌈 Wall meshes collected:", self.wallMeshes.length);
 	const dt = this.clock.getDelta();
 
 	const elapsed = this.clock.getElapsedTime();
-	const hue = (elapsed * 10 % 360) / 360; // Adjust speed with *10
+	const hue = (elapsed * 10 % 360) / 360;
 
-	this.ambientLight.color.setHSL(hue, 1, 0.6); // Sky color
-	this.ambientLight.groundColor.setHSL((hue + 0.5) % 1, 1, 0.4); // Ground color
+this.ambientLight.color.setHSL(hue, 1, 0.6);
+this.ambientLight.groundColor.setHSL((hue + 0.5) % 1, 1, 0.4);
+
+this.directionalLight.color.setHSL(hue, 1, 0.6); // <- sync to same hue
 
 	// 🌈 Animate wall colors
 	if (this.wallMeshes) {
