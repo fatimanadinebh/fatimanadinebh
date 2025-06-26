@@ -44,11 +44,18 @@ class App{
 			}
 		}, { once: true });
 
-		// ✅ Light: only directional with rainbow effect
+		// ✅ Directional light pointing straight down
 this.directionalLight = new THREE.DirectionalLight(0xffffff, 1.2);
-this.directionalLight.position.set(5, 10, 7.5);
+this.directionalLight.position.set(0, 10, 0); // directly above the scene
+this.directionalLight.target.position.set(0, 0, 0); // point downward to the origin
 this.scene.add(this.directionalLight);
-
+this.scene.add(this.directionalLight.target); // must add the target to the scene
+this.directionalLight.castShadow = true;
+this.directionalLight.shadow.bias = -0.001;
+this.directionalLight.shadow.radius = 4;
+this.directionalLight.shadow.mapSize.width = 1024;
+this.directionalLight.shadow.mapSize.height = 1024;
+		
 		this.renderer = new THREE.WebGLRenderer({ antialias: true });
 		this.renderer.setPixelRatio(window.devicePixelRatio);
 		this.renderer.setSize(window.innerWidth, window.innerHeight);
